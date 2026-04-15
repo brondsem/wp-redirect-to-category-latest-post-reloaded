@@ -17,16 +17,16 @@ class RCLP_Custom_Menu_Field {
     $id = sprintf( 'edit-menu-item-latest-post-%s', $item->ID );
     $name  = sprintf( '%s[%s]', $key, $item->ID );
     $value = get_post_meta( $item->ID, $key, true );
-    $checked = checked( $value==true, true, false );
+    $checked = checked( (bool) $value, true, false );
 
     if( $item->object == 'category' ) {
     ?>
       <p class="field-latest-post description description-wide">
         <?php printf(
-          '<label for="%1$s"><input type="checkbox" id="%1$s" name="%2$s" value="true" %3$s />Redirect to the latest post</label>',
+          '<label for="%1$s"><input type="checkbox" id="%1$s" name="%2$s" value="1" %3$s />Redirect to the latest post</label>',
           esc_attr( $id ),
           esc_attr( $name ),
-          esc_attr( $checked )
+          $checked
         ) ?>
       </p>
     <?php
@@ -45,9 +45,9 @@ class RCLP_Custom_Menu_Field {
     $key = self::$field;
 
     // Sanitize
-    if ( ! empty( $_POST[ $key ][ $menu_item_db_id ] ) ) {
-      // Do some checks here...
-      $value = sanitize_key($_POST[ $key ][ $menu_item_db_id ]) == 1 ? 1 : 0;
+    if ( isset( $_POST[ $key ][ $menu_item_db_id ] ) ) {
+      $raw_value = wp_unslash( $_POST[ $key ][ $menu_item_db_id ] );
+      $value     = '1' === (string) $raw_value ? 1 : 0;
     } else {
       $value = null;
     }
@@ -65,7 +65,7 @@ class RCLP_Custom_Menu_Field {
   public static function _merge( $item ) {
     $key = self::$field;
     $value = get_post_meta( $item->ID, self::$field, true );
-    $item->$key = $value;
+    $item->$key = (int) $value;
 
     return $item;
   }
@@ -74,5 +74,3 @@ class RCLP_Custom_Menu_Field {
 
 
 RCLP_Custom_Menu_Field::init();
-
-?>

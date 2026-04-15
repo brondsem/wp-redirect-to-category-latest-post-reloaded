@@ -8,24 +8,34 @@ class RCLP_Category_Latest_Post_Redirect {
 
 
   // URL query redirect
-  public function _url_redirect( $request ) {
-    if( isset( $_GET['latest'] ) && isset( $request->query_vars['category_name'] ) ){
-      $latest = new WP_Query( array(
-        'category_name' => $request->query_vars['category_name'],
-        'posts_per_page' => 1
-      ) );
-      if( $latest->have_posts() ){
-        wp_redirect( get_permalink( $latest->post->ID ) );
-        exit;
-      }
+  public static function _url_redirect( $request ) {
+    if ( is_admin() || ! isset( $_GET['latest'], $request->query_vars['category_name'] ) ) {
+      return;
+    }
+
+    $latest = new WP_Query(
+      array(
+        'category_name'       => sanitize_title_for_query( (string) $request->query_vars['category_name'] ),
+        'posts_per_page'      => 1,
+        'post_status'         => 'publish',
+        'ignore_sticky_posts' => true,
+        'no_found_rows'       => true,
+      )
+    );
+
+    if ( $latest->have_posts() && ! empty( $latest->posts[0]->ID ) ) {
+      wp_safe_redirect( get_permalink( (int) $latest->posts[0]->ID ) );
+      exit;
     }
   }
 
 
   // Update menu link
-  public function _navbar_redirect( $items, $menu, $args ) {
-    foreach( $items as $item ) {
-        $item->redirect_latest_post == true && $item->object == 'category' && $item->url .= '?latest';
+  public static function _navbar_redirect( $items, $menu, $args ) {
+    foreach ( $items as $item ) {
+      if ( ! empty( $item->redirect_latest_post ) && 'category' === $item->object ) {
+        $item->url = add_query_arg( 'latest', '1', $item->url );
+      }
     }
 
     return $items;
@@ -34,5 +44,3 @@ class RCLP_Category_Latest_Post_Redirect {
 
 
 RCLP_Category_Latest_Post_Redirect::init();
-
-?>

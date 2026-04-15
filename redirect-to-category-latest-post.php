@@ -4,6 +4,8 @@ Plugin Name: Redirect to Category Latest Post
 Plugin URI: https://github.com/emma2334/wp-redirect-to-category-latest-post
 Description: Redirect category menu item to the latest post in it.
 Version: 0.2.2
+Requires at least: 5.0
+Requires PHP: 7.4
 Author: Emma Chung
 Author URI: http://emma2334.github.io
 License: GPLv2
@@ -27,15 +29,13 @@ class RCLP_Redirect_To_Category_Latest_Post {
 
 
   private function includes() {
-    require_once( dirname( __FILE__ ).'/includes/redirect.php' );
+    require_once __DIR__ . '/includes/redirect.php';
 
-    if(is_admin()) {
-      require_once( dirname( __FILE__ ).'/includes/menu-field.php' );
+    if ( is_admin() ) {
+      require_once __DIR__ . '/includes/menu-field.php';
     }
   }
 
 }
 
 RCLP_Redirect_To_Category_Latest_Post::instance();
-
-?>
