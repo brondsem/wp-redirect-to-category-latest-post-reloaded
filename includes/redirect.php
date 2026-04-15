@@ -9,7 +9,7 @@ class RCLP_Category_Latest_Post_Redirect {
 
   // URL query redirect
   public static function _url_redirect( $request ) {
-    $latest_flag = filter_input( INPUT_GET, 'latest', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+    $latest_flag = filter_input( INPUT_GET, 'latest', FILTER_UNSAFE_RAW );
 
     if ( is_admin() || null === $latest_flag || false === $latest_flag || ! isset( $request->query_vars['category_name'] ) ) {
       return;
@@ -25,7 +25,7 @@ class RCLP_Category_Latest_Post_Redirect {
       )
     );
 
-    if ( $latest->have_posts() && ! empty( $latest->posts[0]->ID ) ) {
+    if ( $latest->have_posts() ) {
       wp_safe_redirect( get_permalink( (int) $latest->posts[0]->ID ) );
       exit;
     }
