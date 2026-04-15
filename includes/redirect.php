@@ -9,9 +9,9 @@ class RCLP_Category_Latest_Post_Redirect {
 
   // URL query redirect
   public static function _url_redirect( $request ) {
-    $latest_flag = filter_input( INPUT_GET, 'latest', FILTER_UNSAFE_RAW );
+    $has_latest_flag = filter_has_var( INPUT_GET, 'latest' );
 
-    if ( is_admin() || null === $latest_flag || false === $latest_flag || ! isset( $request->query_vars['category_name'] ) ) {
+    if ( is_admin() || ! $has_latest_flag || ! isset( $request->query_vars['category_name'] ) ) {
       return;
     }
 
@@ -35,7 +35,7 @@ class RCLP_Category_Latest_Post_Redirect {
   // Update menu link
   public static function _navbar_redirect( $items, $menu, $args ) {
     foreach ( $items as $item ) {
-      if ( ! empty( $item->redirect_latest_post ) && 'category' === $item->object ) {
+      if ( 1 === (int) $item->redirect_latest_post && 'category' === $item->object ) {
         $item->url = add_query_arg( 'latest', '1', $item->url );
       }
     }
