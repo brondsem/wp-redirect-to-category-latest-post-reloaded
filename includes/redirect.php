@@ -9,7 +9,9 @@ class RCLP_Category_Latest_Post_Redirect {
 
   // URL query redirect
   public static function _url_redirect( $request ) {
-    if ( is_admin() || ! isset( $_GET['latest'], $request->query_vars['category_name'] ) ) {
+    $latest_flag = filter_input( INPUT_GET, 'latest', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+    if ( is_admin() || null === $latest_flag || false === $latest_flag || ! isset( $request->query_vars['category_name'] ) ) {
       return;
     }
 
