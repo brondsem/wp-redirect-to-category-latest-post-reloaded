@@ -26,7 +26,9 @@ class RCLP_Category_Latest_Post_Redirect {
     );
 
     if ( $latest->have_posts() ) {
-      wp_safe_redirect( get_permalink( (int) $latest->posts[0]->ID ) );
+      $latest->the_post();
+      wp_safe_redirect( get_permalink( (int) get_the_ID() ) );
+      wp_reset_postdata();
       exit;
     }
   }
